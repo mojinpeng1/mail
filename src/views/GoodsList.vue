@@ -22,12 +22,14 @@
           <div class="filter stopPop" id="filter">
             <dl class="filter-price">
               <dt>Price:</dt>
+             
               <dd>
-                <a href="javascript:void(0)">All</a>
+                <a href="javascript:void(0)" @click="setPriceFilter('all')" v-bind:class="{'cur':priceChecked=='all'}">All</a>
+                </dd>
+              <dd v-for="(priceItem,index) in priceFilter" :key="index">
+                <a href="javascript:void(0)" @click="setPriceFilter(index)" v-bind:class="{'cur':priceChecked==index}">{{priceItem.startPrice}} - {{priceItem.endPrice}}</a>
               </dd>
-              <dd>
-                <a href="javascript:void(0)">0 - 100</a>
-              </dd>
+             
             </dl>
           </div>
 
@@ -35,10 +37,10 @@
           <div class="accessory-list-wrap">
             <div class="accessory-list col-4">
               <ul>
-                <li v-for="(item,index) in goodsList">
+                <li v-for="(item,index) in goodsList" :key="index">
                   <div class="pic">
                     <a href="#">
-                      <img v-bind:src="'/static/'+item.prodcutImg" alt />
+                      <img v-lazy="'/static/'+item.prodcutImg"/>
                     </a>
                   </div>
                   <div class="main">
@@ -72,7 +74,21 @@ import axios from "axios";
 export default {
   data(){
     return{
-      goodsList:[]
+      goodsList:[],
+      // 价格过滤区间
+      priceFilter:[
+        {startPrice:'0.00',
+        endPrice:'50.00'},
+        {
+          startPrice:'50.00',
+          endPrice:'200.00'
+        },
+        {
+          startPrice:'200.00',
+          endPrice: '500.00'
+        }
+      ],
+      priceChecked:'all'// 选中的过滤项
     }
   },
   mounted: function(){
@@ -88,6 +104,10 @@ export default {
         axios.get("/api/goods").then((res) => {
           this.goodsList=res.data.result;
         });
+    },
+    setPriceFilter(index){
+      console.log(index)
+       this.priceChecked = index;
     }
   }
 };
